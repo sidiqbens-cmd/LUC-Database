@@ -1,0 +1,44 @@
+{
+  "control_fields": {
+    "isbn": "",
+    "matching_key": "" 
+  },
+  "main_entry": {
+    "author_personal": "",
+    "author_authority_id": ""
+  },
+  "title_statement": {
+    "main_title": "",
+    "remainder_of_title": "",
+    "statement_of_responsibility": ""
+  },
+  "publication_distribution": {
+    "place": "دون مكان نشر",
+    "publisher": "دون ناشر",
+    "date": "دون تاريخ"
+  },
+  "physical_description": {
+    "extent": "",
+    "dimensions": ""
+  },
+  "added_entries": [
+    {
+      "name": "",
+      "role": "", 
+      "type": "مؤلف مشارك/مشرف/مراجع/مترجم"
+    }
+  ],
+  "subject_access": [
+    {
+      "term": "",
+      "source": "قائمة شعبان خليفة"
+    }
+  ],
+  "holdings": [
+    {
+      "library_name": "",
+      "copy_count": 0,
+      "local_id": ""
+    }
+  ]
+}
