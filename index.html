@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>واجهة إدخال الفهرس الليبي الموحد</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #27ae60; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .row { display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background-color: #27ae60; color: white; width: 100%; margin-top: 20px; }
+        .btn-shortcut { background-color: #e67e22; color: white; font-size: 12px; padding: 5px 10px; margin-top: 5px; }
+        .participant-group { background: #f9f9f9; padding: 15px; border-right: 5px solid #3498db; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>إضافة عنوان جديد - الفهرس الموحد</h2>
+    
+    <div class="form-group">
+        <label>الرقم الدولي (ISBN)</label>
+        <input type="text" id="isbn" placeholder="أدخل الردمك للمضاهاة...">
+    </div>
+
+    <hr>
+
+    <div class="form-group">
+        <label>العنوان الرئيسي</label>
+        <input type="text" id="title" required>
+    </div>
+
+    <div class="form-group">
+        <label>المؤلف الرئيسي</label>
+        <input type="text" id="author" placeholder="لقب، اسم">
+    </div>
+
+    <div class="participant-group">
+        <label>المشاركون في المسؤولية الفكرية</label>
+        <div class="row">
+            <input type="text" placeholder="اسم المشارك">
+            <select style="width: 150px;">
+                <option>مؤلف مشارك</option>
+                <option>مشرف</option>
+                <option>مراجع</option>
+                <option>مترجم</option>
+                <option>محقق</option>
+            </select>
+        </div>
+        <button class="btn" style="background:#ddd; margin-top:5px;">+ إضافة مشارك آخر</button>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="form-group" style="flex:1;">
+            <label>مكان النشر</label>
+            <input type="text" id="place">
+            <button class="btn-shortcut" onclick="document.getElementById('place').value='دون مكان نشر'">دون مكان</button>
+        </div>
+        <div class="form-group" style="flex:1;">
+            <label>الناشر</label>
+            <input type="text" id="publisher">
+            <button class="btn-shortcut" onclick="document.getElementById('publisher').value='دون ناشر'">دون ناشر</button>
+        </div>
+        <div class="form-group" style="flex:1;">
+            <label>التاريخ</label>
+            <input type="text" id="date">
+            <button class="btn-shortcut" onclick="document.getElementById('date').value='دون تاريخ'">دون تاريخ</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>رؤوس الموضوعات (قائمة شعبان خليفة)</label>
+        <textarea placeholder="أدخل الموضوعات مفصولة بشرطة ( - )"></textarea>
+    </div>
+
+    <button class="btn btn-primary">حفظ ونشر فوري في الفهرس الموحد</button>
+</div>
+
+<script>
+    // هنا سنضع لاحقاً كود البرمجة للربط مع API الخاص بـ GitHub
+    console.log("الواجهة جاهزة للربط...");
+</script>
+
+</body>
+</html>
