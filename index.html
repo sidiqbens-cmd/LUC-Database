@@ -2,22 +2,22 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>الفهرس الليبي الموحد - LUC</title>
+    <title>الفهرس الليبي الموحد - LUC Professional</title>
     <style>
-        :root { --primary: #1a5276; --worldcat: #d32f2f; --success: #27ae60; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 5px; font-size: 13px; line-height: 1.2; }
-        .container { max-width: 1150px; margin: auto; background: #fff; padding: 10px; border-radius: 5px; height: 98vh; display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 10px; }
-        .search-panel { background: #eef2f3; padding: 10px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #d1d9e0; }
-        .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-bottom: 5px; }
+        :root { --primary: #1a5276; --worldcat: #d32f2f; --success: #27ae60; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 2px; font-size: 13px; line-height: 1.1; overflow: hidden; }
+        .container { max-width: 1180px; margin: auto; background: #fff; padding: 5px; border-radius: 4px; height: 99vh; display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 2px; margin-bottom: 4px; }
+        .search-area { background: #eef2f3; padding: 5px; border: 1px solid #d1d9e0; border-radius: 4px; margin-bottom: 4px; }
+        .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; margin-bottom: 3px; }
         .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
-        label { font-weight: bold; color: var(--primary); font-size: 11px; display: block; margin-bottom: 2px; }
-        input { padding: 4px; border: 1px solid #bbb; border-radius: 3px; font-size: 13px; height: 26px; width: 100%; box-sizing: border-box; }
-        .btn { border: none; cursor: pointer; border-radius: 3px; font-weight: bold; color: white; padding: 0 15px; height: 32px; font-size: 12px; }
-        .btn-save { background: var(--success); font-size: 16px; height: 45px; width: 100%; margin-top: auto; }
-        #status_box { border: 2px solid #ccc; font-weight: bold; text-align: center; border-radius: 4px; background: #f8f9fa; height: 26px; line-height: 26px; }
-        #resultsModal { display: none; position: fixed; top: 10%; left: 50%; transform: translate(-50%, 0); background: white; border: 2px solid var(--primary); z-index: 1000; width: 80%; max-height: 450px; overflow-y: auto; padding: 20px; box-shadow: 0 10px 50px rgba(0,0,0,0.3); }
-        .res-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        label { font-weight: bold; color: var(--primary); font-size: 11px; }
+        input { padding: 2px 4px; border: 1px solid #bbb; border-radius: 2px; font-size: 13px; height: 22px; width: 100%; box-sizing: border-box; }
+        .btn { border: none; cursor: pointer; border-radius: 3px; font-weight: bold; color: white; padding: 0 8px; height: 28px; font-size: 11px; }
+        .btn-save { background: var(--success); font-size: 16px; height: 38px; width: 100%; margin-top: auto; cursor: pointer; }
+        #status_box { border: 2px solid #ccc; font-weight: bold; text-align: center; border-radius: 3px; background: #eee; height: 24px; line-height: 24px; font-size: 11px; }
+        #resultsModal { display: none; position: fixed; top: 5%; left: 50%; transform: translate(-50%, 0); background: white; border: 2px solid var(--primary); z-index: 1000; width: 80%; max-height: 450px; overflow-y: auto; padding: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .res-item { padding: 6px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 12px; }
         .res-item:hover { background: #f0f7fb; }
     </style>
 </head>
@@ -25,61 +25,60 @@
 
 <div class="container">
     <div class="header">
-        <h2 style="margin:0; font-size: 22px; color: var(--primary);">الفهرس الليبي الموحد</h2>
-        <div style="display:flex; gap:10px; align-items:center;">
-            <span id="lib_tag" style="background:#d4e6f1; padding:3px 12px; border-radius:15px; font-weight:bold; font-size:12px;"></span>
-            <button onclick="setSettings()" style="cursor:pointer; padding:4px 8px;">⚙️ الإعدادات</button>
+        <h2 style="margin:0; font-size: 18px; color: var(--primary);">الفهرس الليبي الموحد</h2>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <span id="lib_tag" style="background:#d4e6f1; padding:2px 8px; border-radius:10px; font-weight:bold; font-size:11px;"></span>
+            <button onclick="setSettings()" style="cursor:pointer; font-size:10px;">⚙️ الإعدادات</button>
         </div>
     </div>
 
-    <div class="search-panel">
+    <div class="search-area">
         <div class="grid">
             <div class="f-group span-4">
-                <label>البحث والمضاهاة (أدخل الردمك أو العنوان)</label>
-                <div style="display:flex; gap:4px;">
-                    <input type="text" id="main_query" placeholder="أدخل الردمك للبحث في WorldCat و LUC...">
-                    <button class="btn" style="background:#f39c12;" onclick="runLocalMatch()">🔍 مضاهاة</button>
+                <label>البحث والمضاهاة (ردمك أو عنوان)</label>
+                <div style="display:flex; gap:3px;">
+                    <input type="text" id="main_query" placeholder="أدخل بيانات البحث هنا...">
+                    <button class="btn" style="background:#f39c12;" onclick="checkLocalMatch()">🔍 مضاهاة</button>
                     <button class="btn" style="background:var(--worldcat);" onclick="fetchWorldCat()">WorldCat</button>
                 </div>
             </div>
             <div class="f-group span-4">
-                <label>حالة الفحص في الفهرس الموحد</label>
-                <div id="status_box">بانتظار إدخال بيانات...</div>
+                <label>حالة السجل المحلي</label>
+                <div id="status_box">في انتظار الفحص...</div>
             </div>
         </div>
     </div>
 
     <div class="grid">
-        <div class="f-group span-4"><label>العنوان الرئيسي (245)</label><input type="text" id="f_title" style="border:1.5px solid var(--primary);"></div>
-        <div class="f-group span-2"><label>المؤلف (100)</label><input type="text" id="f_author"></div>
-        <div class="f-group span-2"><label>الردمك (020)</label><input type="text" id="f_isbn"></div>
+        <div class="f-group span-4"><label>العنوان الرئيسي (245$a)</label><input type="text" id="f_title" style="border:1.5px solid var(--primary);"></div>
+        <div class="f-group span-2"><label>المؤلف (100$a)</label><input type="text" id="f_author"></div>
+        <div class="f-group span-2"><label>الردمك (020$a)</label><input type="text" id="f_isbn"></div>
     </div>
 
     <div class="grid">
-        <div class="f-group span-2"><label>الناشر</label><input type="text" id="f_pub"></div>
+        <div class="f-group span-2"><label>الناشر (260$b)</label><input type="text" id="f_pub"></div>
         <div class="f-group span-2"><label>مكان النشر</label><input type="text" id="f_place"></div>
         <div class="f-group"><label>التاريخ</label><input type="text" id="f_year"></div>
         <div class="f-group"><label>الطبعة</label><input type="text" id="f_ed"></div>
         <div class="f-group span-2"><label>رؤوس الموضوعات</label><input type="text" id="f_subj"></div>
     </div>
 
-    <div class="grid" style="margin-top:10px; padding:8px; border:1px dashed #ccc; background:#fff;">
-        <div class="f-group span-2"><label>المكتبة الحالية</label><input type="text" id="lib_display" readonly style="background:#eee;"></div>
+    <div class="grid" style="margin-top:5px; background:#fff; padding:4px; border:1px dashed #ccc;">
+        <div class="f-group span-2"><label>المكتبة</label><input type="text" id="lib_display" readonly style="background:#f9f9f9;"></div>
         <div class="f-group"><label>النسخ</label><input type="number" id="f_copies" value="1"></div>
-        <div class="f-group span-5"><label>ملاحظات السجل</label><input type="text" id="f_notes" placeholder="ملاحظات المضاهاة تظهر هنا تلقائياً..."></div>
+        <div class="f-group span-5"><label>ملاحظات</label><input type="text" id="f_notes" placeholder="ملاحظات المضاهاة..."></div>
     </div>
 
-    <button class="btn btn-save" onclick="saveToGitHub()">اعتماد وحفظ السجل نهائياً</button>
+    <button class="btn btn-save" onclick="saveToLUC()">اعتماد وحفظ السجل في الفهرس</button>
 </div>
 
-<div id="resultsModal"><div id="modalBody"></div><button onclick="closeModal()" style="width:100%; margin-top:15px; padding:10px; font-weight:bold;">إغلاق النافذة</button></div>
+<div id="resultsModal"><div id="modalBody"></div><button onclick="closeModal()" style="width:100%; margin-top:8px; padding:6px;">إغلاق</button></div>
 
 <script>
-    // الإعدادات من صورك السابقة
-    const CONFIG = { owner: "sidiqbens-cmd", repo: "LUC-Database" };
+    const CONFIG = { owner: "sidiqbens-cmd", repo: "LUC-Database", path: "records" };
 
     function setSettings() {
-        const t = prompt("أدخل GitHub Token:");
+        const t = prompt("GitHub Token:");
         const l = prompt("اسم المكتبة:");
         if(t) localStorage.setItem('LUC_TOKEN', t.trim());
         if(l) localStorage.setItem('LUC_LIB', l.trim());
@@ -92,68 +91,54 @@
         document.getElementById('lib_tag').innerText = "📍 " + lib;
     };
 
-    // --- 1. المضاهاة المحلية ---
-    async function runLocalMatch() {
-        const q = document.getElementById('main_query').value.trim().toLowerCase().replace(/[-\s]/g, "");
+    // المضاهاة الذكية: تبحث في محتوى الملفات لضمان العثور على العناوين المكررة
+    async function checkLocalMatch() {
+        const q = document.getElementById('main_query').value.trim();
         const token = localStorage.getItem('LUC_TOKEN');
         const sBox = document.getElementById('status_box');
-        if(!q || !token) return alert("يرجى إدخال البحث والتوكن أولاً");
+        if(!q || !token) return alert("أدخل البحث والتوكن");
 
-        sBox.innerText = "⏳ جاري فحص السجلات...";
-        sBox.style.background = "#fff3cd";
-
+        sBox.innerText = "⏳ فحص...";
         try {
-            const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/records?cb=${Date.now()}`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            if(!res.ok) throw new Error("فشل الاتصال");
-            
-            const files = await res.json();
-            const match = files.find(f => f.name.toLowerCase().includes(q));
+            const url = `https://api.github.com/search/code?q=${encodeURIComponent(q)}+in:file+repo:${CONFIG.owner}/${CONFIG.repo}+path:${CONFIG.path}`;
+            const res = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+            const data = await res.json();
 
-            if(match) {
-                sBox.innerText = "⚠️ مضاهاة موجودة (مكرر)";
-                sBox.style.background = "#f8d7da"; sBox.style.color = "#721c24";
-                const dRes = await fetch(match.download_url);
-                const d = await dRes.json();
-                fillData(d.bib || d);
+            if (data.total_count > 0) {
+                sBox.innerText = "⚠️ مكرر (موجود)"; sBox.style.background = "#f8d7da";
+                const fileData = await (await fetch(data.items[0].url, { headers: { 'Authorization': `token ${token}` } })).json();
+                const content = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+                fillFields(content.bib || content);
+                document.getElementById('f_notes').value = "تم العثور على مضاهاة سابقة لهذا الكتاب.";
             } else {
-                sBox.innerText = "✅ سجل جديد";
-                sBox.style.background = "#d4edda"; sBox.style.color = "#155724";
+                sBox.innerText = "✅ سجل جديد"; sBox.style.background = "#d4edda";
             }
-        } catch(e) { sBox.innerText = "❌ فشل الوصول للمستودع"; }
+        } catch(e) { sBox.innerText = "❌ خطأ اتصال"; }
     }
 
-    // --- 2. بحث WorldCat ---
     async function fetchWorldCat() {
         const q = document.getElementById('main_query').value;
         if(!q) return;
         const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5`);
         const data = await res.json();
-        
         const body = document.getElementById('modalBody');
-        body.innerHTML = "<h3>نتائج WorldCat:</h3>";
+        body.innerHTML = "<h4>نتائج WorldCat:</h4>";
         if(!data.items) return body.innerHTML += "<p>لا توجد نتائج</p>";
-
         data.items.forEach(i => {
             const v = i.volumeInfo;
             const div = document.createElement('div');
             div.className = "res-item";
-            div.innerHTML = `<strong>${v.title}</strong> | ${v.authors?.[0] || '---'}`;
+            div.innerHTML = `<strong>${v.title}</strong> | ${v.authors?.[0] || ''}`;
             div.onclick = () => { 
-                fillData({
-                    title: v.title, author: v.authors?.[0], 
-                    isbn: v.industryIdentifiers?.[0]?.identifier, 
-                    publisher: v.publisher, date: v.publishedDate
-                }); 
-                closeModal(); 
+                fillFields({ title: v.title, author: v.authors?.[0], isbn: v.industryIdentifiers?.[0]?.identifier, publisher: v.publisher, date: v.publishedDate });
+                closeModal();
             };
             body.appendChild(div);
         });
         document.getElementById('resultsModal').style.display = 'block';
     }
 
-    function fillData(b) {
+    function fillFields(b) {
         document.getElementById('f_title').value = b.title || "";
         document.getElementById('f_author').value = b.author || "";
         document.getElementById('f_isbn').value = b.isbn || "";
@@ -161,36 +146,27 @@
         document.getElementById('f_year').value = b.date || "";
     }
 
-    // --- 3. الحفظ المطور (يعالج مشكلة فشل الحفظ) ---
-    async function saveToGitHub() {
+    async function saveToLUC() {
         const token = localStorage.getItem('LUC_TOKEN');
         const title = document.getElementById('f_title').value;
         const isbn = document.getElementById('f_isbn').value.trim().replace(/[-\s]/g, "") || "LUC-"+Date.now();
-        if(!token || !title) return alert("البيانات ناقصة");
+        if(!token || !title) return alert("بيانات ناقصة");
 
-        const record = { 
-            bib: { title, author: document.getElementById('f_author').value, isbn, publisher: document.getElementById('f_pub').value, date: document.getElementById('f_year').value },
-            holdings: { library: localStorage.getItem('LUC_LIB'), time: new Date().toISOString() }
-        };
-
+        const record = { bib: { title, author: document.getElementById('f_author').value, isbn, publisher: document.getElementById('f_pub').value, date: document.getElementById('f_year').value }, holdings: { library: localStorage.getItem('LUC_LIB'), updated: new Date().toISOString() } };
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
         
-        // جلب SHA إذا كان الملف موجوداً للتحديث بدلاً من الفشل
         let sha = "";
         try {
-            const cRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/records/${isbn}.json`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            if(cRes.ok) { const d = await cRes.json(); sha = d.sha; }
+            const check = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}/${isbn}.json`, { headers: { 'Authorization': `token ${token}` } });
+            if(check.ok) { const d = await check.json(); sha = d.sha; }
         } catch(e) {}
 
-        const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/records/${isbn}.json`, {
+        const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}/${isbn}.json`, {
             method: 'PUT', headers: { 'Authorization': `token ${token}` },
-            body: JSON.stringify({ message: `Save: ${title}`, content: content, sha: sha || undefined })
+            body: JSON.stringify({ message: `LUC Save: ${title}`, content: content, sha: sha || undefined })
         });
-        
-        if(res.ok) alert("✅ تمت عملية الحفظ بنجاح!");
-        else alert("❌ فشل الحفظ: تأكد من صلاحية التوكن (خيار repo)");
+        if(res.ok) alert(sha ? "✅ تم تحديث السجل المكرر بنجاح" : "✅ تم حفظ السجل بنجاح");
+        else alert("❌ خطأ: تأكد من التوكن");
     }
 
     function closeModal() { document.getElementById('resultsModal').style.display = 'none'; }
