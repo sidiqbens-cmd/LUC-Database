@@ -88,50 +88,53 @@
     }
 
     // المضاهاة الذكية (التعديل الجوهري)
-    async function smartSearch() {
+   // استبدل دالة smartSearch بهذا المحرك القوي
+async function smartSearch() {
     const query = document.getElementById('search_query').value.trim();
+    const token = localStorage.getItem('LUC_TOKEN');
     const status = document.getElementById('status');
+    
     if(!query) return;
+    if(!token) return alert("يرجى إدخال التوكن في الإعدادات أولاً لتفعيل المضاهاة!");
 
     status.style.display = "block";
     status.style.background = "#fff3cd";
-    status.innerText = "🔍 جاري الفحص الذكي في سجلات الفهرس الليبي الموحد...";
+    status.innerText = "🔍 جاري الاتصال الآمن بالقاعدة المحلية لفحص المضاهاة...";
 
     try {
-        // تنظيف الاستعلام (حذف المسافات والشرطات)
         const cleanQuery = query.replace(/[-\s]/g, "").toLowerCase();
         
-        // جلب قائمة كافة السجلات المحلية
-        const repoFiles = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records`, { cache: "no-store" });
-        
-        if (repoFiles.ok) {
-            const files = await repoFiles.json();
-            
-            // محاولة المضاهاة المرنة: هل الاستعلام جزء من اسم أي ملف؟
-            const match = files.find(f => {
-                const fileName = f.name.replace(/[-\s]/g, "").toLowerCase();
-                return fileName.includes(cleanQuery) || cleanQuery.includes(fileName.replace(".json", ""));
-            });
+        // فحص المضاهاة باستخدام التوكن لضمان الصلاحية
+        const repoRes = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records`, {
+            headers: { 'Authorization': `token ${token}` },
+            cache: "no-store"
+        });
 
+        if (repoRes.ok) {
+            const files = await repoRes.json();
+            // مضاهاة مرنة: بالردمك أو بجزء من اسم الملف
+            const match = files.find(f => f.name.includes(cleanQuery) || cleanQuery.includes(f.name.replace(".json", "")));
+            
             if (match) {
                 status.style.background = "#f8d7da";
-                status.innerHTML = `⚠️ <strong>تمت المضاهاة:</strong> هذا السجل موجود بالفعل في القاعدة المحلية.<br>اسم الملف: ${match.name}`;
+                status.innerHTML = `⚠️ <strong>تمت المضاهاة المحلية:</strong> هذا الكتاب مسجل مسبقاً.<br>اسم السجل: ${match.name}`;
                 
-                // جلب البيانات وعرضها فوراً
                 const detail = await fetch(match.download_url);
                 const data = await detail.json();
                 fillForm(data.bib || data);
-                return; // منع البحث العالمي نهائياً
+                return; // إيقاف البحث العالمي تماماً
             }
+        } else {
+            throw new Error("صلاحيات التوكن غير كافية للقراءة");
         }
 
-        // إذا لم يجد أي تطابق محلي مرن، ينتقل للعالمي
-        status.innerText = "🌐 لا يوجد تطابق محلي.. جاري البحث في الفهارس العالمية...";
-        executeGlobalSearch(query); 
+        // الانتقال للعالمي فقط عند التأكد من عدم الوجود محلياً
+        status.innerText = "🌐 السجل غير موجود محلياً، جاري الجلب من الفهارس العالمية...";
+        executeGlobalSearch(query);
 
     } catch (e) {
-        status.innerText = "❌ تعذر فحص المضاهاة، سأنتقل للبحث العالمي.";
-        executeGlobalSearch(query);
+        status.style.background = "#f8d7da";
+        status.innerText = "❌ فشل فحص المضاهاة: تأكد من صحة التوكن أو صلاحياته (Repo Access).";
     }
 }
 
