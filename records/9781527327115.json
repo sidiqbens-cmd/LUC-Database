@@ -2,12 +2,11 @@
   "bib": {
     "title": "ثرثرة فوق النيل",
     "author": "نجيب محفوظ",
+    "isbn": "9781527327115",
     "publisher": "Hindawi Foundation",
-    "date": "2022-06-20",
-    "isbn": "9781527327115"
+    "date": "2022-06-20"
   },
   "holdings": {
-    "library": "111",
-    "copies": "1"
+    "library": "222"
   }
 }
