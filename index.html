@@ -89,42 +89,51 @@
 
     // المضاهاة الذكية (التعديل الجوهري)
     async function smartSearch() {
-        const query = document.getElementById('search_query').value.trim();
-        const status = document.getElementById('status');
-        if(!query) return;
+    const query = document.getElementById('search_query').value.trim();
+    const status = document.getElementById('status');
+    if(!query) return;
 
-        status.style.display = "block";
-        status.style.background = "#fff3cd";
-        status.innerText = "🔍 فحص المضاهاة المحلية في مجلد records...";
+    status.style.display = "block";
+    status.style.background = "#fff3cd";
+    status.innerText = "🔍 جاري الفحص الذكي في سجلات الفهرس الليبي الموحد...";
 
-        try {
-            // تنظيف الردمك للبحث
-            const cleanQuery = query.replace(/-/g, "");
+    try {
+        // تنظيف الاستعلام (حذف المسافات والشرطات)
+        const cleanQuery = query.replace(/[-\s]/g, "").toLowerCase();
+        
+        // جلب قائمة كافة السجلات المحلية
+        const repoFiles = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records`, { cache: "no-store" });
+        
+        if (repoFiles.ok) {
+            const files = await repoFiles.json();
             
-            // 1. مضاهاة محلية إجبارية في GitHub
-            const repoFiles = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records`, { cache: "no-store" });
-            if (repoFiles.ok) {
-                const files = await repoFiles.json();
-                const match = files.find(f => f.name.includes(cleanQuery) || f.name.toLowerCase().includes(query.toLowerCase()));
-                
-                if (match) {
-                    status.style.background = "#f8d7da";
-                    status.innerHTML = `⚠️ <strong>مضاهاة محلية:</strong> السجل موجود مسبقاً باسم (${match.name}).`;
-                    const detail = await fetch(match.download_url);
-                    const data = await detail.json();
-                    fillForm(data.bib || data);
-                    return; // منع الانتقال للبحث العالمي
-                }
-            }
+            // محاولة المضاهاة المرنة: هل الاستعلام جزء من اسم أي ملف؟
+            const match = files.find(f => {
+                const fileName = f.name.replace(/[-\s]/g, "").toLowerCase();
+                return fileName.includes(cleanQuery) || cleanQuery.includes(fileName.replace(".json", ""));
+            });
 
-            // 2. البحث العالمي (فقط إذا فشل المحلي)
-            status.innerText = "🌐 جاري الجلب من الفهارس العالمية...";
-            const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5`);
-            const data = await res.json();
-            if (data.items) showResults(data.items);
-            else status.innerText = "❌ لا توجد نتائج.";
-        } catch (e) { status.innerText = "❌ خطأ اتصال."; }
+            if (match) {
+                status.style.background = "#f8d7da";
+                status.innerHTML = `⚠️ <strong>تمت المضاهاة:</strong> هذا السجل موجود بالفعل في القاعدة المحلية.<br>اسم الملف: ${match.name}`;
+                
+                // جلب البيانات وعرضها فوراً
+                const detail = await fetch(match.download_url);
+                const data = await detail.json();
+                fillForm(data.bib || data);
+                return; // منع البحث العالمي نهائياً
+            }
+        }
+
+        // إذا لم يجد أي تطابق محلي مرن، ينتقل للعالمي
+        status.innerText = "🌐 لا يوجد تطابق محلي.. جاري البحث في الفهارس العالمية...";
+        executeGlobalSearch(query); 
+
+    } catch (e) {
+        status.innerText = "❌ تعذر فحص المضاهاة، سأنتقل للبحث العالمي.";
+        executeGlobalSearch(query);
     }
+}
 
     function showResults(items) {
         const list = document.getElementById('resultsList');
