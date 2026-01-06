@@ -1,0 +1,32 @@
+{
+  "bib_info": {
+    "isbn": "9789772704811",
+    "title": "دائرة المعارف العربية في علوم الكتب والمكتبات والمعلومات",
+    "author": "خليفة، شعبان عبد العزيز",
+    "responsibility": "",
+    "edition": {
+      "num": "",
+      "statement": ""
+    },
+    "publication": {
+      "place": "",
+      "publisher": "",
+      "date": "1998"
+    },
+    "physical": {
+      "pages": "628",
+      "size": ""
+    },
+    "classification": {
+      "ddc": "",
+      "lcc": ""
+    },
+    "series": "",
+    "subjects": "Books and reading"
+  },
+  "holding_info": {
+    "library": "المكتبة الوطنية الليبية",
+    "copies": "1",
+    "added_at": "2026-01-06T08:43:20.152Z"
+  }
+}
