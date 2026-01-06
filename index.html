@@ -146,28 +146,49 @@
         document.getElementById('f_year').value = b.date || "";
     }
 
-    async function saveToLUC() {
-        const token = localStorage.getItem('LUC_TOKEN');
-        const title = document.getElementById('f_title').value;
-        const isbn = document.getElementById('f_isbn').value.trim().replace(/[-\s]/g, "") || "LUC-"+Date.now();
-        if(!token || !title) return alert("بيانات ناقصة");
+async function saveRecord() {
+    const token = localStorage.getItem('LUC_T');
+    const title = document.getElementById('title').value;
+    const isbn = document.getElementById('isbn').value.trim().replace(/[-\s]/g, "") || "LUC-"+Date.now();
+    
+    if(!token || !title) return alert("بيانات ناقصة");
 
-        const record = { bib: { title, author: document.getElementById('f_author').value, isbn, publisher: document.getElementById('f_pub').value, date: document.getElementById('f_year').value }, holdings: { library: localStorage.getItem('LUC_LIB'), updated: new Date().toISOString() } };
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
-        
-        let sha = "";
-        try {
-            const check = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}/${isbn}.json`, { headers: { 'Authorization': `token ${token}` } });
-            if(check.ok) { const d = await check.json(); sha = d.sha; }
-        } catch(e) {}
+    const record = { 
+        bib: { title, author: document.getElementById('author').value, isbn }, 
+        holdings: { library: localStorage.getItem('LUC_L'), updated: new Date().toLocaleString() } 
+    };
 
-        const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}/${isbn}.json`, {
-            method: 'PUT', headers: { 'Authorization': `token ${token}` },
-            body: JSON.stringify({ message: `LUC Save: ${title}`, content: content, sha: sha || undefined })
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
+    
+    let sha = "";
+    // فحص إذا كان موجوداً لجلب الـ SHA
+    try {
+        const check = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/records/${isbn}.json`, { 
+            headers: { 'Authorization': `token ${token}` } 
         });
-        if(res.ok) alert(sha ? "✅ تم تحديث السجل المكرر بنجاح" : "✅ تم حفظ السجل بنجاح");
-        else alert("❌ خطأ: تأكد من التوكن");
+        if(check.ok) { 
+            const d = await check.json(); 
+            sha = d.sha; 
+        }
+    } catch(e) {}
+
+    const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/records/${isbn}.json`, {
+        method: 'PUT', 
+        headers: { 'Authorization': `token ${token}` },
+        body: JSON.stringify({ message: "Save", content: content, sha: sha || undefined })
+    });
+    
+    if(res.ok) {
+        // هنا سر الإرباك.. سنغير الرسالة لتكون واضحة تماماً
+        if (sha) {
+            alert("⚠️ تنبيه مضاهاة:\nهذا الكتاب موجود مسبقاً في الفهرس، وقد تم تحديث بياناته الآن بنجاح.");
+        } else {
+            alert("✅ تم تسجيل الكتاب كإدخال جديد لأول مرة.");
+        }
+    } else {
+        alert("❌ خطأ: لم يتم الحفظ. تأكد من صلاحية التوكن.");
     }
+}
 
     function closeModal() { document.getElementById('resultsModal').style.display = 'none'; }
 </script>
