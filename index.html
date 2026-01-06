@@ -1,4 +1,4 @@
-// استبدل دالة saveRecord بهذه النسخة لتعالج "فشل الحفظ"
+// استبدل دالة saveRecord بهذه النسخة الاحترافية لمعالجة التكرار
 async function saveRecord() {
     const token = localStorage.getItem('LUC_T');
     const title = document.getElementById('title').value;
@@ -8,38 +8,47 @@ async function saveRecord() {
     if(!token || !title) return alert("البيانات ناقصة!");
 
     const record = { 
-        bib: { title, author: document.getElementById('author').value, isbn: isbn }, 
-        holdings: { library: localStorage.getItem('LUC_L'), timestamp: new Date().toISOString() } 
+        bib: { 
+            title: title, 
+            author: document.getElementById('author').value, 
+            isbn: isbn,
+            publisher: document.getElementById('pub').value,
+            date: document.getElementById('date').value
+        }, 
+        holdings: { 
+            library: localStorage.getItem('LUC_L'), 
+            timestamp: new Date().toISOString() 
+        } 
     };
 
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
     
-    // 1. أولاً نحاول معرفة إذا كان الملف موجوداً لجلب الـ SHA (لتجنب فشل الحفظ)
     let sha = "";
     try {
+        // الخطوة 1: فحص وجود الملف لجلب رمز الـ SHA لمنع "فشل الحفظ"
         const checkRes = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records/${fileName}`, {
             headers: { 'Authorization': `token ${token}` }
         });
         if(checkRes.ok) {
             const fileData = await checkRes.json();
-            sha = fileData.sha; // جلب رمز التحديث
+            sha = fileData.sha; 
         }
     } catch(e) {}
 
-    // 2. الآن نقوم بالحفظ (إما إنشاء جديد أو تحديث الموجود)
+    // الخطوة 2: الحفظ أو التحديث التلقائي
     const res = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records/${fileName}`, {
         method: 'PUT',
         headers: { 'Authorization': `token ${token}` },
         body: JSON.stringify({ 
-            message: sha ? `Update: ${title}` : `Add: ${title}`, 
+            message: sha ? `تحديث سجل: ${title}` : `إضافة سجل جديد: ${title}`, 
             content: content,
-            sha: sha // إذا كان موجوداً سيتم التحديث بدلاً من الفشل
+            sha: sha 
         })
     });
 
     if(res.ok) {
-        alert("✅ تم الحفظ بنجاح (تم التحديث إذا كان مكرراً)");
+        alert(sha ? "✅ تم تحديث السجل الموجود بنجاح" : "✅ تم حفظ السجل الجديد بنجاح");
     } else {
-        alert("❌ فشل الحفظ: تأكد من صلاحيات التوكن (الخيار repo)");
+        alert("❌ فشل الحفظ: تأكد من صلاحيات التوكن (خيار repo)");
     }
 }
