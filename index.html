@@ -4,101 +4,112 @@
     <meta charset="UTF-8">
     <title>الفهرس الليبي الموحد - LUC</title>
     <style>
-        :root { --primary: #1a5276; --danger: #e74c3c; --success: #27ae60; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 5px; font-size: 13px; }
-        .container { max-width: 1100px; margin: auto; background: #fff; padding: 10px; border-radius: 4px; height: 98vh; display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-bottom: 8px; }
-        .span-4 { grid-column: span 4; }
-        input { padding: 6px; border: 1px solid #bbb; border-radius: 3px; font-size: 14px; width: 100%; box-sizing: border-box; }
-        .btn-save { background: var(--success); font-size: 18px; height: 50px; width: 100%; margin-top: auto; color: white; border: none; cursor: pointer; font-weight: bold; }
-        #status_box { border: 2px solid #ccc; font-weight: bold; text-align: center; border-radius: 4px; background: #eee; height: 35px; line-height: 35px; }
+        :root { --primary: #1a5276; --danger: #c0392b; --success: #27ae60; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f3f4; margin: 0; padding: 2px; font-size: 13px; overflow: hidden; }
+        .container { max-width: 1100px; margin: auto; background: #fff; padding: 8px; height: 98vh; display: flex; flex-direction: column; border: 2px solid var(--primary); }
+        .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-bottom: 5px; }
+        .span-4 { grid-column: span 4; } .span-2 { grid-column: span 2; }
+        input { padding: 4px; border: 1px solid #aaa; border-radius: 3px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        .btn { border: none; cursor: pointer; color: white; font-weight: bold; padding: 5px 15px; border-radius: 3px; }
+        #status_box { border: 2px dashed #7f8c8d; font-weight: bold; text-align: center; background: #eee; height: 35px; line-height: 35px; font-size: 15px; }
+        .btn-save { background: var(--success); font-size: 20px; height: 50px; width: 100%; margin-top: auto; border: none; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h2 style="margin:0; font-size: 20px;">الفهرس الليبي الموحد</h2>
-        <button onclick="setSettings()">⚙️ الضبط والتوكن</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="margin:0; color:var(--primary);">الفهرس الليبي الموحد</h2>
+        <button class="btn" style="background:var(--primary)" onclick="setSettings()">⚙️ الإعدادات</button>
     </div>
 
-    <div style="background: #eef2f3; padding: 12px; border: 1px solid #d1d9e0; border-radius: 4px; margin-bottom: 10px;">
+    <div style="background:#d5dbdb; padding:10px; border-radius:5px; margin-bottom:10px;">
         <div class="grid">
-            <div class="f-group span-4">
-                <label style="font-weight:bold; color:var(--primary)">افحص المضاهاة (عنوان أو ردمك)</label>
+            <div class="span-4">
+                <label style="font-weight:bold;">البحث عن مضاهاة (عنوان أو ردمك):</label>
                 <div style="display:flex; gap:5px;">
-                    <input type="text" id="query" placeholder="مثال: ثرثرة فوق النيل">
-                    <button style="background:#f39c12; color:white; border:none; padding:0 15px; cursor:pointer; font-weight:bold;" onclick="checkMatch()">🔍 فحص</button>
+                    <input type="text" id="query" placeholder="أدخل 'ثرثرة' أو الردمك...">
+                    <button class="btn" style="background:#f39c12;" onclick="checkMatch()">🔍 افحص القاعدة</button>
                 </div>
             </div>
-            <div class="f-group span-4">
-                <label style="font-weight:bold;">حالة السجل في الفهرس</label>
-                <div id="status_box">بانتظار الفحص...</div>
+            <div class="span-4">
+                <label style="font-weight:bold;">نتيجة الفحص الحالية:</label>
+                <div id="status_box">بانتظار البحث...</div>
             </div>
         </div>
     </div>
 
     <div class="grid">
-        <div class="f-group span-4"><label>العنوان</label><input type="text" id="title"></div>
-        <div class="f-group span-2"><label>المؤلف</label><input type="text" id="author"></div>
-        <div class="f-group span-2"><label>الردمك</label><input type="text" id="isbn"></div>
+        <div class="span-4"><label>العنوان الرئيسي</label><input type="text" id="title"></div>
+        <div class="span-2"><label>المؤلف</label><input type="text" id="author"></div>
+        <div class="span-2"><label>الردمك</label><input type="text" id="isbn"></div>
     </div>
 
-    <button class="btn-save" onclick="saveRecord()">اعتماد وحفظ السجل</button>
+    <div class="grid">
+        <div class="span-2"><label>الناشر</label><input type="text" id="pub"></div>
+        <div class="span-2"><label>المكان</label><input type="text" id="place"></div>
+        <div class="span-2"><label>التاريخ</label><input type="text" id="year"></div>
+        <div class="span-2"><label>المكتبة</label><input type="text" id="lib_name" readonly style="background:#eee;"></div>
+    </div>
+
+    <button class="btn-save" onclick="saveRecord()">✅ اعتماد وحفظ السجل نهائياً</button>
 </div>
 
 <script>
     const CONFIG = { owner: "sidiqbens-cmd", repo: "LUC-Database" };
 
     function setSettings() {
-        const t = prompt("أدخل التوكن:");
-        const l = prompt("اسم المكتبة:");
+        const t = prompt("GitHub Token:");
+        const l = prompt("اسم مكتبتك:");
         if(t) localStorage.setItem('LUC_T', t.trim());
         if(l) localStorage.setItem('LUC_L', l.trim());
         location.reload();
     }
 
+    window.onload = () => {
+        document.getElementById('lib_name').value = localStorage.getItem('LUC_L') || "لم تحدد";
+    };
+
+    // نظام المضاهاة الذكي (كشف التكرار)
     async function checkMatch() {
         const q = document.getElementById('query').value.trim();
         const token = localStorage.getItem('LUC_T');
         const sBox = document.getElementById('status_box');
-        if(!q || !token) return alert("يرجى ضبط التوكن أولاً");
+        if(!q || !token) return alert("يرجى ضبط التوكن والبحث");
 
-        sBox.innerText = "⏳ جاري البحث في القاعدة...";
+        sBox.innerText = "⏳ جاري فحص السجلات المحلية...";
         sBox.style.background = "#fff3cd";
 
         try {
-            // البحث داخل الملفات لضمان المضاهاة بالعنوان حتى لو اختلف اسم الملف
+            // البحث داخل محتوى الملفات لضمان كشف "ثرثرة"
             const url = `https://api.github.com/search/code?q=${encodeURIComponent(q)}+in:file+repo:${CONFIG.owner}/${CONFIG.repo}+path:records`;
             const res = await fetch(url, { headers: { 'Authorization': `token ${token}` } });
             const data = await res.json();
 
             if (data.total_count > 0) {
-                sBox.innerText = "⚠️ مضاهاة: الكتاب موجود مسبقاً!";
-                sBox.style.background = "#f8d7da"; sBox.style.color = "#721c24";
+                sBox.innerText = "🚨 تنبيه: الكتاب موجود مسبقاً (مضاهاة مكررة)";
+                sBox.style.background = "#f8d7da"; sBox.style.color = "#c0392b";
                 
                 const fRes = await fetch(data.items[0].url, { headers: { 'Authorization': `token ${token}` } });
                 const fData = await fRes.json();
-                const content = JSON.parse(decodeURIComponent(escape(atob(fData.content))));
-                const b = content.bib || content;
+                const b = JSON.parse(decodeURIComponent(escape(atob(fData.content)))).bib;
                 
                 document.getElementById('title').value = b.title;
                 document.getElementById('author').value = b.author;
                 document.getElementById('isbn').value = b.isbn;
-                alert("⚠️ تنبيه مضاهاة: هذا الكتاب مسجل لدينا بالفعل. تم جلب بياناته لتعديلها.");
+                alert("تم العثور على مضاهاة! الكتاب مسجل بالفعل، يمكنك تحديث بياناته الآن.");
             } else {
-                sBox.innerText = "✅ سجل جديد: غير موجود مسبقاً";
+                sBox.innerText = "✅ سجل جديد: لم يعثر على مضاهاة";
                 sBox.style.background = "#d4edda"; sBox.style.color = "#155724";
             }
-        } catch(e) { sBox.innerText = "❌ خطأ اتصال (تحقق من التوكن)"; }
+        } catch(e) { sBox.innerText = "❌ فشل الاتصال بالقاعدة"; }
     }
 
     async function saveRecord() {
         const token = localStorage.getItem('LUC_T');
         const title = document.getElementById('title').value;
         const isbn = document.getElementById('isbn').value.trim().replace(/[-\s]/g, "") || "LUC-"+Date.now();
-        if(!token || !title) return alert("بيانات ناقصة");
+        if(!token || !title) return alert("أكمل البيانات أولاً");
 
         let sha = "";
         try {
@@ -108,17 +119,17 @@
             if(check.ok) { const d = await check.json(); sha = d.sha; }
         } catch(e) {}
 
-        const record = { bib: { title, author: document.getElementById('author').value, isbn }, holdings: { lib: localStorage.getItem('LUC_L'), time: new Date().toLocaleString() } };
+        const record = { bib: { title, author: document.getElementById('author').value, isbn }, holdings: { lib: localStorage.getItem('LUC_L'), ts: new Date().toISOString() } };
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
 
         const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/records/${isbn}.json`, {
             method: 'PUT', headers: { 'Authorization': `token ${token}` },
-            body: JSON.stringify({ message: "Update", content: content, sha: sha || undefined })
+            body: JSON.stringify({ message: "LUC Sync", content: content, sha: sha || undefined })
         });
         
         if(res.ok) {
-            if(sha) alert("⚠️ نجحت المضاهاة:\nالكتاب موجود مسبقاً، وتم تحديث بياناته الآن.");
-            else alert("✅ تم تسجيل الكتاب كإدخال جديد بنجاح.");
+            if(sha) alert("✅ نجحت المضاهاة وتحديث السجل القديم بنجاح!");
+            else alert("✅ تم تسجيل السجل الجديد بنجاح في الفهرس.");
         } else {
             alert("❌ فشل الحفظ؛ تأكد من صلاحية التوكن وخيار (repo).");
         }
