@@ -4,25 +4,19 @@
     <meta charset="UTF-8">
     <title>الفهرس الليبي الموحد - LUC</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #e74c3c; --success: #27ae60; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 5px; font-size: 11px; overflow-x: hidden; }
-        .container { max-width: 1000px; margin: auto; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
+        :root { --primary: #2c3e50; --success: #27ae60; --warning: #f39c12; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 5px; font-size: 11px; }
+        .container { max-width: 950px; margin: auto; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 8px; }
-        .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-bottom: 5px; }
         .f-group { display: flex; flex-direction: column; }
         .span-2 { grid-column: span 2; } .span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; }
-        
         label { font-weight: bold; color: var(--primary); margin-bottom: 1px; font-size: 10px; }
-        input, select { padding: 3px; border: 1px solid #ccc; border-radius: 3px; font-size: 11px; height: 22px; }
-        
-        .btn-fetch { background: #3498db; color: white; border: none; cursor: pointer; padding: 0 12px; border-radius: 3px; font-weight: bold; height: 22px; }
-        .btn-submit { background: var(--success); color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
-        
-        #status { text-align: center; margin: 4px 0; font-weight: bold; padding: 4px; border-radius: 3px; font-size: 10px; display: none; }
-        
-        /* نافذة النتائج */
-        #resultsModal { display: none; position: fixed; top: 5%; left: 50%; transform: translate(-50%, 0); background: white; border: 2px solid var(--primary); z-index: 1000; width: 90%; max-height: 450px; overflow-y: auto; padding: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); border-radius: 10px; }
+        input, select { padding: 4px; border: 1px solid #ccc; border-radius: 3px; font-size: 11px; height: 24px; }
+        .btn-fetch { background: #3498db; color: white; border: none; cursor: pointer; padding: 0 15px; border-radius: 3px; font-weight: bold; }
+        .btn-submit { background: var(--success); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
+        #status { text-align: center; margin: 5px 0; font-weight: bold; padding: 8px; border-radius: 4px; display: none; border: 1px solid transparent; }
+        #resultsModal { display: none; position: fixed; top: 10%; left: 50%; transform: translate(-50%, 0); background: white; border: 2px solid var(--primary); z-index: 1000; width: 90%; max-height: 400px; overflow-y: auto; padding: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); border-radius: 10px; }
         .result-item { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
         .result-item:hover { background: #e3f2fd; }
     </style>
@@ -31,57 +25,51 @@
 
 <div class="container">
     <div class="header">
-        <h2 style="margin:0; font-size: 18px; color: var(--primary);">الفهرس الليبي الموحد</h2>
-        <div>
-            <span id="lib_display" style="font-weight:bold; color:var(--success); margin-left:10px;"></span>
-            <button onclick="setToken()" style="font-size: 9px; cursor:pointer;">🔑 إعدادات المفهرس</button>
-        </div>
+        <h2 style="margin:0;">الفهرس الليبي الموحد</h2>
+        <button onclick="setToken()" style="font-size: 10px; padding: 2px 8px; cursor:pointer;">⚙️ إعدادات المفهرس</button>
     </div>
 
     <div id="status"></div>
 
-    <div class="grid" style="background: #f0f4f8; padding: 6px; border-radius: 5px;">
+    <div class="grid" style="background: #eef2f3; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
         <div class="f-group span-4">
-            <label>البحث بالردمك أو العنوان (للمضاهاة والجلب)</label>
-            <div style="display:flex; gap:4px;">
-                <input type="text" id="search_query" style="flex-grow:1" placeholder="أدخل ISBN أو عنوان الكتاب للتحقق...">
+            <label>المضاهاة والجلب (أدخل الردمك ISBN أو العنوان)</label>
+            <div style="flex; display:flex; gap:5px;">
+                <input type="text" id="search_query" style="flex-grow:1" placeholder="مثال: 9789959... أو تاريخ ليبيا">
                 <button class="btn-fetch" onclick="smartSearch()">🔍 فحص ومضاهاة</button>
             </div>
         </div>
         <div class="f-group span-2">
-            <label>العنوان الرئيسي (إلزامي) *</label>
+            <label>العنوان المؤكد *</label>
             <input type="text" id="title" style="border: 1px solid var(--success)">
         </div>
     </div>
 
     <div class="grid">
         <div class="f-group span-2"><label>المؤلف الرئيسي</label><input type="text" id="author"></div>
-        <div class="f-group span-2"><label>بيان المسؤولية (تحقيق/ترجمة)</label><input type="text" id="responsibility"></div>
+        <div class="f-group span-2"><label>بيان المسؤولية</label><input type="text" id="responsibility"></div>
         <div class="f-group span-2"><label>السلسلة</label><input type="text" id="series"></div>
     </div>
 
     <div class="grid">
         <div class="f-group"><label>رقم الطبعة</label><input type="text" id="ed_num"></div>
-        <div class="f-group span-2"><label>بيان الطبعة (نص)</label><input type="text" id="ed_statement"></div>
-        <div class="f-group"><label>مكان النشر</label><input type="text" id="place"></div>
+        <div class="f-group span-2"><label>بيان الطبعة</label><input type="text" id="ed_statement"></div>
+        <div class="f-group"><label>المكان</label><input type="text" id="place"></div>
         <div class="f-group"><label>الناشر</label><input type="text" id="publisher"></div>
         <div class="f-group"><label>التاريخ</label><input type="text" id="date"></div>
     </div>
 
     <div class="grid">
         <div class="f-group"><label>الصفحات</label><input type="text" id="pages"></div>
-        <div class="f-group"><label>الوصف المادي (سم)</label><input type="text" id="physical"></div>
+        <div class="f-group"><label>الحجم (سم)</label><input type="text" id="physical"></div>
         <div class="f-group"><label>ديوي (DDC)</label><input type="text" id="ddc"></div>
         <div class="f-group"><label>الكونجرس (LCC)</label><input type="text" id="lcc"></div>
         <div class="f-group span-2"><label>رؤوس الموضوعات</label><input type="text" id="subjects"></div>
     </div>
 
-    <div class="grid" style="border-top: 1px dashed #ccc; padding-top: 5px; margin-top: 5px;">
-        <div class="f-group span-2">
-            <label>المكتبة الحالية</label>
-            <input type="text" id="lib_name" placeholder="اسم مكتبتك">
-        </div>
-        <div class="f-group"><label>عدد النسخ</label><input type="number" id="copies" value="1"></div>
+    <div class="grid" style="border-top: 1px solid #ddd; padding-top: 8px; margin-top: 5px;">
+        <div class="f-group span-2"><label>المكتبة الحالية</label><input type="text" id="lib_name"></div>
+        <div class="f-group"><label>النسخ</label><input type="number" id="copies" value="1"></div>
         <div class="f-group span-3"><label>ملاحظات إضافية</label><input type="text" id="notes"></div>
     </div>
 
@@ -89,77 +77,66 @@
 </div>
 
 <div id="resultsModal">
-    <h3 style="margin-top:0">نتائج الفهارس العالمية (اختر النسخة المطابقة):</h3>
+    <h3 style="margin-top:0">نتائج البحث العالمي:</h3>
     <div id="resultsList"></div>
-    <button onclick="document.getElementById('resultsModal').style.display='none'" style="margin-top:10px; width:100%; padding:5px; cursor:pointer;">إغلاق النافذة</button>
+    <button onclick="document.getElementById('resultsModal').style.display='none'" style="width:100%; margin-top:10px;">إغلاق</button>
 </div>
 
 <script>
-    // تهيئة البيانات والتوكن
+    // تهيئة الإعدادات
     document.addEventListener('DOMContentLoaded', () => {
-        const token = localStorage.getItem('LUC_TOKEN');
-        const lib = localStorage.getItem('LUC_LIB');
-        if (lib) {
-            document.getElementById('lib_name').value = lib;
-            document.getElementById('lib_display').innerText = "📍 " + lib;
-        }
+        document.getElementById('lib_name').value = localStorage.getItem('LUC_LIB') || "";
     });
 
     function setToken() {
-        const t = prompt("أدخل GitHub Token:");
-        const l = prompt("أدخل اسم مكتبتك (ليظهر في الفهرس):");
+        const t = prompt("GitHub Token:");
+        const l = prompt("اسم مكتبتك:");
         if(t) localStorage.setItem('LUC_TOKEN', t);
-        if(l) {
-            localStorage.setItem('LUC_LIB', l);
-            location.reload();
-        }
+        if(l) { localStorage.setItem('LUC_LIB', l); location.reload(); }
     }
 
-async function smartSearch() {
-    const query = document.getElementById('search_query').value.trim();
-    const status = document.getElementById('status');
-    if(!query) return alert("يرجى إدخال الردمك أو العنوان للفحص");
+    async function smartSearch() {
+        const query = document.getElementById('search_query').value.trim();
+        const status = document.getElementById('status');
+        if(!query) return;
 
-    status.style.display = "block";
-    status.innerText = "🔍 جاري فحص قاعدة بيانات الفهرس الليبي الموحد...";
-    status.style.background = "#fff3cd";
+        status.style.display = "block";
+        status.style.background = "#fff3cd";
+        status.innerText = "🔍 جاري فحص السجلات المحلية في الفهرس الليبي الموحد...";
 
-    try {
-        // تنظيف الردمك من الشرطات إذا وجد
-        const cleanIsbn = query.replace(/-/g, "");
-        
-        // محاولة جلب ملف يحمل نفس الردمك مباشرة (أسرع وأدق مضاهاة)
-        const localCheck = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records/${cleanIsbn}.json`);
-        
-        if (localCheck.ok) {
-            const fileData = await localCheck.json();
-            // فك تشفير البيانات الموجدة لعرضها للمفهرس
-            const existingBook = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+        try {
+            // 1. المضاهاة المحلية عبر فحص قائمة الملفات
+            const repoUrl = `https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records`;
+            const localRes = await fetch(repoUrl);
             
-            status.innerHTML = `⚠️ <strong>تنبيه مضاهاة:</strong> هذا الكتاب موجود مسبقاً!<br>
-                               العنوان: ${existingBook.bib.title}<br>
-                               المكتبة المسجلة: ${existingBook.holdings.library}`;
-            status.style.background = "#f8d7da";
+            if (localRes.ok) {
+                const files = await localRes.json();
+                const match = files.find(f => f.name.toLowerCase().includes(query.toLowerCase()));
+                
+                if (match) {
+                    status.style.background = "#f8d7da";
+                    status.innerHTML = `⚠️ <strong>تنبيه مضاهاة:</strong> هذا السجل موجود مسبقاً باسم (${match.name}).<br>يرجى إضافة مقتنيات مكتبتك فقط وعدم تكرار السجل.`;
+                    // جلب بيانات الملف الموجود لتعبئتها
+                    const detailRes = await fetch(match.download_url);
+                    const detailData = await detailRes.json();
+                    fillForm(detailData.bib || detailData);
+                    return;
+                }
+            }
+
+            // 2. إذا لم يوجد محلياً، البحث عالمياً
+            status.innerText = "🌐 لم يتم العثور محلياً.. جاري الجلب من الفهارس العالمية...";
+            const globalRes = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8`);
+            const data = await globalRes.json();
             
-            // تعبئة البيانات الموجودة تلقائياً للمراجعة
-            fillForm(existingBook.bib);
-            return; 
-        }
-
-        // إذا لم يوجد تطابق بالردمك، ننتقل للبحث العالمي
-        status.innerText = "🌐 لم يوجد سجل محلي مطابق، جاري البحث عالمياً...";
-        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8`);
-        const data = await res.json();
-        
-        if (data.items) showResults(data.items);
-        else status.innerText = "❌ لا توجد نتائج، يرجى الإدخال يدوياً.";
-
-    } catch (e) {
-        console.error("خطأ في المضاهاة:", e);
-        // في حال فشل الاتصال بجيتهب، جرب البحث العالمي كخيار احتياطي
-        searchBooksFromGlobal(); 
+            if (data.items) {
+                showResults(data.items);
+                status.style.display = "none";
+            } else {
+                status.innerText = "❌ لم يتم العثور على نتائج. يرجى الإدخال يدوياً.";
+            }
+        } catch (e) { status.innerText = "❌ خطأ في الاتصال بالقاعدة."; }
     }
-}
 
     function showResults(items) {
         const list = document.getElementById('resultsList');
@@ -168,7 +145,7 @@ async function smartSearch() {
             const info = item.volumeInfo;
             const div = document.createElement('div');
             div.className = 'result-item';
-            div.innerHTML = `<strong>${info.title || ''}</strong> | ${info.authors ? info.authors[0] : ''} | ${info.publisher || ''} (${info.publishedDate || ''})`;
+            div.innerHTML = `<strong>${info.title || ''}</strong> | ${info.authors ? info.authors[0] : 'مؤلف غير معروف'} | ${info.publisher || ''}`;
             div.onclick = () => { fillForm(info); document.getElementById('resultsModal').style.display='none'; };
             list.appendChild(div);
         });
@@ -177,26 +154,34 @@ async function smartSearch() {
 
     function fillForm(info) {
         document.getElementById('title').value = info.title || '';
-        document.getElementById('author').value = info.authors ? info.authors[0] : '';
+        document.getElementById('author').value = info.author || (info.authors ? info.authors[0] : '');
         document.getElementById('publisher').value = info.publisher || '';
-        document.getElementById('date').value = info.publishedDate || '';
-        document.getElementById('pages').value = info.pageCount || '';
-        document.getElementById('subjects').value = info.categories ? info.categories.join(' - ') : '';
-        document.getElementById('status').style.display = "none";
+        document.getElementById('date').value = info.date || info.publishedDate || '';
+        document.getElementById('pages').value = info.pages || info.pageCount || '';
+        document.getElementById('subjects').value = info.subjects || (info.categories ? info.categories.join(' - ') : '');
     }
 
-    // الحفظ
     document.getElementById('saveBtn').addEventListener('click', async () => {
         const token = localStorage.getItem('LUC_TOKEN');
         const title = document.getElementById('title').value;
-        if(!token || !title) return alert("يرجى إعداد التوكن وكتابة العنوان.");
+        if(!token || !title) return alert("يرجى التأكد من التوكن والعنوان.");
 
         const bookData = {
-            bib: { title, author: document.getElementById('author').value, isbn: document.getElementById('search_query').value, publisher: document.getElementById('publisher').value },
-            holdings: { library: document.getElementById('lib_name').value, copies: document.getElementById('copies').value }
+            bib: {
+                title, 
+                author: document.getElementById('author').value,
+                isbn: document.getElementById('search_query').value,
+                publisher: document.getElementById('publisher').value,
+                date: document.getElementById('date').value
+            },
+            holdings: {
+                library: document.getElementById('lib_name').value,
+                copies: document.getElementById('copies').value
+            }
         };
 
-        const fileName = `LUC-${Date.now()}.json`;
+        const safeTitle = title.replace(/[^a-z0-9]/gi, '_').substring(0, 30);
+        const fileName = `${safeTitle}_${Date.now()}.json`;
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(bookData, null, 2))));
 
         try {
@@ -205,7 +190,8 @@ async function smartSearch() {
                 headers: { 'Authorization': `token ${token}` },
                 body: JSON.stringify({ message: `Add: ${title}`, content: content })
             });
-            if(res.ok) alert("✅ تم النشر في الفهرس الموحد!"); else alert("❌ خطأ في الصلاحيات.");
+            if(res.ok) alert("✅ تم النشر في الفهرس الليبي الموحد!");
+            else alert("❌ فشل الحفظ. تأكد من صلاحيات التوكن.");
         } catch (e) { alert("❌ خطأ شبكة."); }
     });
 </script>
