@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <title>الفهرس الليبي الموحد</title>
     <style>
-        :root { --primary: #2c3e50; --success: #27ae60; --error: #e74c3c; --bg: #f0f2f5; }
+        :root { --primary: #2c3e50; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 5px; font-size: 11px; }
         .container { max-width: 980px; margin: auto; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 8px; }
         .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 5px; }
         .f-group { display: flex; flex-direction: column; }
         .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
-        label { font-weight: bold; color: var(--primary); font-size: 10px; margin-bottom: 1px; }
+        label { font-weight: bold; color: var(--primary); font-size: 10px; }
         input { padding: 3px; border: 1px solid #ccc; border-radius: 3px; font-size: 11px; height: 22px; }
         .btn-fetch { background: #3498db; color: white; border: none; cursor: pointer; padding: 0 15px; border-radius: 3px; font-weight: bold; }
         .btn-submit { background: var(--success); color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
-        #status { text-align: center; margin-bottom: 5px; padding: 6px; border-radius: 4px; font-weight: bold; display: none; }
+        #status { text-align: center; margin-bottom: 5px; padding: 6px; border-radius: 4px; font-weight: bold; display: none; border: 1px solid #ddd; }
         #resultsModal { display: none; position: fixed; top: 5%; left: 50%; transform: translate(-50%, 0); background: white; border: 2px solid var(--primary); z-index: 1000; width: 90%; max-height: 400px; overflow-y: auto; padding: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); border-radius: 8px; }
-        .result-item { padding: 6px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .result-item { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
         .result-item:hover { background: #e3f2fd; }
     </style>
 </head>
@@ -26,7 +26,7 @@
 <div class="container">
     <div class="header">
         <h2 style="margin:0; font-size: 16px;">الفهرس الليبي الموحد</h2>
-        <button onclick="setToken()" style="font-size: 9px; cursor:pointer;">⚙️ الإعدادات</button>
+        <button onclick="setToken()" style="font-size: 9px; cursor:pointer;">⚙️ إعدادات المفهرس</button>
     </div>
 
     <div id="status"></div>
@@ -35,7 +35,7 @@
         <div class="f-group span-4">
             <label>البحث للمضاهاة والجلب (ردمك أو عنوان)</label>
             <div style="display:flex; gap:4px;">
-                <input type="text" id="search_query" style="flex-grow:1" placeholder="أدخل الرقم أو العنوان...">
+                <input type="text" id="search_query" style="flex-grow:1" placeholder="أدخل الرقم أو العنوان للفحص...">
                 <button class="btn-fetch" onclick="smartSearch()">🔍 فحص المضاهاة</button>
             </div>
         </div>
@@ -68,7 +68,7 @@
     </div>
 
     <div class="grid" style="border-top: 1px solid #ddd; padding-top: 5px; margin-top: 5px;">
-        <div class="f-group span-2"><label>مكتبتك</label><input type="text" id="lib_name"></div>
+        <div class="f-group span-2"><label>اسم مكتبتك</label><input type="text" id="lib_name"></div>
         <div class="f-group"><label>النسخ</label><input type="number" id="copies" value="1"></div>
         <div class="f-group span-3"><label>ملاحظات إضافية</label><input type="text" id="notes"></div>
     </div>
@@ -76,76 +76,77 @@
     <button id="saveBtn" class="btn-submit">نشر السجل في الفهرس الموحد</button>
 </div>
 
-<div id="resultsModal"><div id="resultsList"></div><button onclick="document.getElementById('resultsModal').style.display='none'" style="width:100%; margin-top:10px;">إغلاق</button></div>
+<div id="resultsModal"><div id="resultsList"></div><button onclick="document.getElementById('resultsModal').style.display='none'" style="width:100%; margin:10px 0; padding:5px;">إغلاق</button></div>
 
 <script>
-    // الإعدادات
     function setToken() {
-        const t = prompt("GitHub Token:");
-        const l = prompt("اسم المكتبة:");
+        const t = prompt("أدخل GitHub Token الخاص بك:");
+        const l = prompt("اسم المكتبة المساهمة:");
         if(t) localStorage.setItem('LUC_TOKEN', t);
         if(l) localStorage.setItem('LUC_LIB', l);
+        location.reload();
     }
 
-    // المضاهاة الذكية (التعديل الجوهري)
-   // استبدل دالة smartSearch بهذا المحرك القوي
-async function smartSearch() {
-    const query = document.getElementById('search_query').value.trim();
-    const token = localStorage.getItem('LUC_TOKEN');
-    const status = document.getElementById('status');
-    
-    if(!query) return;
-    if(!token) return alert("يرجى إدخال التوكن في الإعدادات أولاً لتفعيل المضاهاة!");
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('lib_name').value = localStorage.getItem('LUC_LIB') || "";
+    });
 
-    status.style.display = "block";
-    status.style.background = "#fff3cd";
-    status.innerText = "🔍 جاري الاتصال الآمن بالقاعدة المحلية لفحص المضاهاة...";
-
-    try {
-        const cleanQuery = query.replace(/[-\s]/g, "").toLowerCase();
+    async function smartSearch() {
+        const query = document.getElementById('search_query').value.trim();
+        const token = localStorage.getItem('LUC_TOKEN');
+        const status = document.getElementById('status');
         
-        // فحص المضاهاة باستخدام التوكن لضمان الصلاحية
-        const repoRes = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records`, {
-            headers: { 'Authorization': `token ${token}` },
-            cache: "no-store"
-        });
+        if(!query) return;
+        if(!token) { alert("يرجى إدخال التوكن في الإعدادات لتفعيل المضاهاة!"); return setToken(); }
 
-        if (repoRes.ok) {
-            const files = await repoRes.json();
-            // مضاهاة مرنة: بالردمك أو بجزء من اسم الملف
-            const match = files.find(f => f.name.includes(cleanQuery) || cleanQuery.includes(f.name.replace(".json", "")));
+        status.style.display = "block";
+        status.style.background = "#fff3cd";
+        status.innerText = "🔍 جاري فحص السجلات المحلية (باستخدام التوكن)...";
+
+        try {
+            const cleanQuery = query.replace(/[-\s]/g, "").toLowerCase();
             
-            if (match) {
-                status.style.background = "#f8d7da";
-                status.innerHTML = `⚠️ <strong>تمت المضاهاة المحلية:</strong> هذا الكتاب مسجل مسبقاً.<br>اسم السجل: ${match.name}`;
+            // طلب فحص المجلد مع إرسال التوكن لفتح الصلاحيات
+            const repoRes = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records`, {
+                headers: { 'Authorization': `token ${token}` },
+                cache: "no-store"
+            });
+
+            if (repoRes.ok) {
+                const files = await repoRes.json();
+                const match = files.find(f => f.name.toLowerCase().includes(cleanQuery));
                 
-                const detail = await fetch(match.download_url);
-                const data = await detail.json();
-                fillForm(data.bib || data);
-                return; // إيقاف البحث العالمي تماماً
+                if (match) {
+                    status.style.background = "#f8d7da";
+                    status.innerHTML = `⚠️ <strong>سجل موجود مسبقاً:</strong> تمت المضاهاة مع ملف (${match.name}).`;
+                    const detail = await fetch(match.download_url);
+                    const data = await detail.json();
+                    fillForm(data.bib || data);
+                    return; 
+                }
             }
-        } else {
-            throw new Error("صلاحيات التوكن غير كافية للقراءة");
+
+            // إذا لم يجد محلياً، يبحث عالمياً
+            status.innerText = "🌐 السجل غير موجود محلياً.. جاري الجلب عالمياً...";
+            const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5`);
+            const data = await res.json();
+            if (data.items) showResults(data.items);
+            else status.innerText = "❌ لم يتم العثور على نتائج.";
+
+        } catch (e) {
+            status.style.background = "#f8d7da";
+            status.innerText = "❌ خطأ في الاتصال: تأكد من التوكن وصلاحيات الوصول.";
         }
-
-        // الانتقال للعالمي فقط عند التأكد من عدم الوجود محلياً
-        status.innerText = "🌐 السجل غير موجود محلياً، جاري الجلب من الفهارس العالمية...";
-        executeGlobalSearch(query);
-
-    } catch (e) {
-        status.style.background = "#f8d7da";
-        status.innerText = "❌ فشل فحص المضاهاة: تأكد من صحة التوكن أو صلاحياته (Repo Access).";
     }
-}
 
     function showResults(items) {
         const list = document.getElementById('resultsList');
-        list.innerHTML = '<h3 style="margin:0 0 10px">نتائج عالمية:</h3>';
+        list.innerHTML = '<h3 style="margin-top:0">نتائج الفهارس العالمية:</h3>';
         items.forEach(item => {
             const info = item.volumeInfo;
             const div = document.createElement('div');
             div.className = 'result-item';
-            div.innerHTML = `<strong>${info.title || ''}</strong> | ${info.authors?.[0] || ''} | ${info.publisher || ''}`;
+            div.innerHTML = `<strong>${info.title || ''}</strong> | ${info.authors?.[0] || 'مؤلف مجهول'} | ${info.publisher || ''}`;
             div.onclick = () => { fillForm(info); document.getElementById('resultsModal').style.display='none'; };
             list.appendChild(div);
         });
@@ -158,16 +159,16 @@ async function smartSearch() {
         document.getElementById('publisher').value = info.publisher || '';
         document.getElementById('date').value = info.date || info.publishedDate || '';
         document.getElementById('pages').value = info.pages || info.pageCount || '';
-        document.getElementById('subjects').value = info.subjects || info.categories?.join(' - ') || '';
+        document.getElementById('status').style.display = "none";
     }
 
     document.getElementById('saveBtn').addEventListener('click', async () => {
         const token = localStorage.getItem('LUC_TOKEN');
         const title = document.getElementById('title').value;
-        if(!token || !title) return alert("نقص بيانات!");
+        if(!token || !title) return alert("البيانات ناقصة!");
 
-        const isbn = document.getElementById('search_query').value.trim().replace(/-/g, "");
-        const fileName = (isbn.length > 8 ? isbn : 'book-' + Date.now()) + '.json';
+        const isbn = document.getElementById('search_query').value.trim().replace(/[-\s]/g, "");
+        const fileName = (isbn.length > 8 ? isbn : 'LUC-' + Date.now()) + '.json';
         
         const bookData = {
             bib: { title, author: document.getElementById('author').value, publisher: document.getElementById('publisher').value, date: document.getElementById('date').value },
@@ -181,7 +182,7 @@ async function smartSearch() {
                 headers: { 'Authorization': `token ${token}` },
                 body: JSON.stringify({ message: `Add: ${title}`, content: content })
             });
-            if(res.ok) alert("✅ تم النشر!"); else alert("❌ خطأ توكن.");
+            if(res.ok) alert("✅ تم النشر بنجاح!"); else alert("❌ خطأ في الحفظ.");
         } catch (e) { alert("❌ خطأ شبكة."); }
     });
 </script>
