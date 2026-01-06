@@ -1,54 +1,195 @@
-// استبدل دالة saveRecord بهذه النسخة الاحترافية لمعالجة التكرار
-async function saveRecord() {
-    const token = localStorage.getItem('LUC_T');
-    const title = document.getElementById('title').value;
-    const isbn = document.getElementById('isbn').value.trim().replace(/[-\s]/g, "");
-    const fileName = isbn + ".json";
-    
-    if(!token || !title) return alert("البيانات ناقصة!");
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>الفهرس الليبي الموحد - الإصدار الاحترافي</title>
+    <style>
+        :root { --primary: #1a5276; --worldcat: #d32f2f; --lc: #003366; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 5px; font-size: 13px; overflow: hidden; }
+        .container { max-width: 1150px; margin: auto; background: #fff; padding: 8px; border-radius: 4px; height: 98vh; display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-bottom: 8px; }
+        .search-panel { background: #eef2f3; padding: 8px; border: 1px solid #d1d9e0; border-radius: 4px; margin-bottom: 8px; }
+        .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-bottom: 5px; }
+        .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
+        label { font-weight: bold; color: var(--primary); font-size: 11px; }
+        input { padding: 4px; border: 1px solid #bbb; border-radius: 2px; font-size: 13px; height: 22px; width: 100%; box-sizing: border-box; }
+        .btn { border: none; cursor: pointer; border-radius: 3px; font-weight: bold; color: white; padding: 0 10px; height: 28px; font-size: 12px; }
+        .btn-save { background: #27ae60; font-size: 16px; height: 40px; width: 100%; margin-top: auto; }
+        #local_status { border: none; font-weight: bold; text-align: center; border-radius: 3px; background: #eee; }
+        #resultsModal { display: none; position: fixed; top: 10%; left: 50%; transform: translate(-50%, 0); background: white; border: 2px solid var(--primary); z-index: 1000; width: 80%; max-height: 400px; overflow-y: auto; padding: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
 
-    const record = { 
-        bib: { 
-            title: title, 
-            author: document.getElementById('author').value, 
-            isbn: isbn,
-            publisher: document.getElementById('pub').value,
-            date: document.getElementById('date').value
-        }, 
-        holdings: { 
-            library: localStorage.getItem('LUC_L'), 
-            timestamp: new Date().toISOString() 
-        } 
+<div class="container">
+    <div class="header">
+        <h2 style="margin:0; font-size: 20px;">الفهرس الليبي الموحد</h2>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <span id="lib_tag" style="background:#d4e6f1; padding:2px 10px; border-radius:10px; font-weight:bold; font-size:12px;"></span>
+            <button onclick="setSettings()" style="cursor:pointer;">⚙️ الإعدادات</button>
+        </div>
+    </div>
+
+    <div class="search-panel">
+        <div class="grid">
+            <div class="f-group span-4">
+                <label>البحث الدولي والمحلي (ردمك أو عنوان)</label>
+                <div style="display:flex; gap:3px;">
+                    <input type="text" id="main_query" placeholder="أدخل الردمك للبحث...">
+                    <button class="btn" style="background:#f39c12;" onclick="checkLocalMatch()">🔍 مضاهاة</button>
+                    <button class="btn" style="background:var(--worldcat);" onclick="searchWorldCat()">WorldCat</button>
+                    <button class="btn" style="background:var(--lc);" onclick="searchLC()">الكونجرس</button>
+                </div>
+            </div>
+            <div class="f-group span-4">
+                <label>حالة السجل في LUC</label>
+                <input type="text" id="local_status" readonly value="بانتظار الفحص">
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="f-group span-4"><label>العنوان الرئيسي (245)</label><input type="text" id="title" style="border:1.5px solid var(--primary);"></div>
+        <div class="f-group span-2"><label>المؤلف (100)</label><input type="text" id="author"></div>
+        <div class="f-group span-2"><label>الردمك (020)</label><input type="text" id="isbn"></div>
+    </div>
+
+    <div class="grid">
+        <div class="f-group span-2"><label>الناشر</label><input type="text" id="publisher"></div>
+        <div class="f-group span-2"><label>مكان النشر</label><input type="text" id="place"></div>
+        <div class="f-group"><label>التاريخ</label><input type="text" id="year"></div>
+        <div class="f-group"><label>الطبعة</label><input type="text" id="edition"></div>
+        <div class="f-group span-2"><label>رؤوس الموضوعات</label><input type="text" id="subjects"></div>
+    </div>
+
+    <div class="grid" style="margin-top:5px; background:#fdfefe; padding:5px; border:1px dashed #ccc;">
+        <div class="f-group span-2"><label>المكتبة</label><input type="text" id="lib_name" readonly></div>
+        <div class="f-group"><label>النسخ</label><input type="number" id="copies" value="1"></div>
+        <div class="f-group span-5"><label>ملاحظات</label><input type="text" id="notes" placeholder="ملاحظات المضاهاة..."></div>
+    </div>
+
+    <button class="btn btn-save" onclick="saveRecord()">اعتماد وحفظ السجل في الفهرس الموحد</button>
+</div>
+
+<div id="resultsModal"><div id="resList"></div><button onclick="closeModal()" style="width:100%; margin-top:10px; padding:10px;">إغلاق</button></div>
+
+<script>
+    // الإعدادات الثابتة من صورك
+    const USER = "sidiqbens-cmd";
+    const REPO = "LUC-Database";
+
+    function setSettings() {
+        const t = prompt("أدخل GitHub Token:");
+        const l = prompt("اسم المكتبة:");
+        if(t) localStorage.setItem('LUC_T', t.trim());
+        if(l) localStorage.setItem('LUC_L', l.trim());
+        location.reload();
+    }
+
+    window.onload = () => {
+        const lib = localStorage.getItem('LUC_L') || "غير معرف";
+        document.getElementById('lib_name').value = lib;
+        document.getElementById('lib_tag').innerText = "📍 " + lib;
     };
 
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
-    
-    let sha = "";
-    try {
-        // الخطوة 1: فحص وجود الملف لجلب رمز الـ SHA لمنع "فشل الحفظ"
-        const checkRes = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records/${fileName}`, {
-            headers: { 'Authorization': `token ${token}` }
-        });
-        if(checkRes.ok) {
-            const fileData = await checkRes.json();
-            sha = fileData.sha; 
-        }
-    } catch(e) {}
+    // 1. المضاهاة المحلية (بناءً على ملفاتك في GitHub)
+    async function checkLocalMatch() {
+        const q = document.getElementById('main_query').value.trim().replace(/[-\s]/g, "");
+        const token = localStorage.getItem('LUC_T');
+        const st = document.getElementById('local_status');
+        if(!q || !token) return alert("يرجى إدخال البحث والتوكن");
 
-    // الخطوة 2: الحفظ أو التحديث التلقائي
-    const res = await fetch(`https://api.github.com/repos/sidiqbens-cmd/LUC-Database/contents/records/${fileName}`, {
-        method: 'PUT',
-        headers: { 'Authorization': `token ${token}` },
-        body: JSON.stringify({ 
-            message: sha ? `تحديث سجل: ${title}` : `إضافة سجل جديد: ${title}`, 
-            content: content,
-            sha: sha 
-        })
-    });
-
-    if(res.ok) {
-        alert(sha ? "✅ تم تحديث السجل الموجود بنجاح" : "✅ تم حفظ السجل الجديد بنجاح");
-    } else {
-        alert("❌ فشل الحفظ: تأكد من صلاحيات التوكن (خيار repo)");
+        st.value = "⏳ جاري الفحص...";
+        try {
+            const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/records`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            const files = await res.json();
+            const match = files.find(f => f.name.includes(q));
+            
+            if(match) {
+                st.value = "⚠️ مكرر (موجود)"; st.style.background = "#f8d7da";
+                const d = await (await fetch(match.download_url)).json();
+                fillFields(d.bib || d);
+            } else {
+                st.value = "✅ سجل جديد"; st.style.background = "#d4edda";
+            }
+        } catch(e) { st.value = "❌ خطأ في الاتصال"; }
     }
-}
+
+    // 2. محركات البحث الدولية
+    async function searchWorldCat() {
+        const q = document.getElementById('main_query').value;
+        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5`);
+        const data = await res.json();
+        showModalResults(data.items, 'WorldCat');
+    }
+
+    async function searchLC() {
+        const q = document.getElementById('main_query').value;
+        const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=5`);
+        const data = await res.json();
+        showModalResults(data.docs, 'الكونجرس');
+    }
+
+    function showModalResults(items, src) {
+        const list = document.getElementById('resList');
+        list.innerHTML = `<h3>نتائج ${src}:</h3>`;
+        if(!items) return list.innerHTML += "<p>لا توجد نتائج</p>";
+        items.forEach(i => {
+            const info = i.volumeInfo || i;
+            const div = document.createElement('div');
+            div.style = "padding:8px; border-bottom:1px solid #eee; cursor:pointer;";
+            div.innerHTML = `<strong>${info.title}</strong> | ${info.authors?.[0] || info.author_name?.[0] || ''}`;
+            div.onclick = () => { 
+                fillFields({
+                    title: info.title, author: info.authors?.[0] || info.author_name?.[0],
+                    isbn: info.industryIdentifiers?.[0]?.identifier || info.isbn?.[0],
+                    publisher: info.publisher, date: info.publishedDate || info.publish_year?.[0]
+                });
+                closeModal();
+            };
+            list.appendChild(div);
+        });
+        document.getElementById('resultsModal').style.display = 'block';
+    }
+
+    function fillFields(b) {
+        document.getElementById('title').value = b.title || "";
+        document.getElementById('author').value = b.author || "";
+        document.getElementById('isbn').value = b.isbn || "";
+        document.getElementById('publisher').value = b.publisher || "";
+        document.getElementById('year').value = b.date || "";
+    }
+
+    // 3. الحفظ الذكي (تحديث أو إضافة)
+    async function saveRecord() {
+        const token = localStorage.getItem('LUC_T');
+        const title = document.getElementById('title').value;
+        const isbn = document.getElementById('isbn').value.trim().replace(/[-\s]/g, "") || "LUC-"+Date.now();
+        if(!token || !title) return alert("بيانات ناقصة!");
+
+        const record = { bib: { title, author: document.getElementById('author').value, isbn, publisher: document.getElementById('publisher').value, date: document.getElementById('year').value }, holdings: { library: localStorage.getItem('LUC_L') } };
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
+        
+        let sha = "";
+        try {
+            const check = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/records/${isbn}.json`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            if(check.ok) { const d = await check.json(); sha = d.sha; }
+        } catch(e) {}
+
+        const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/records/${isbn}.json`, {
+            method: 'PUT', headers: { 'Authorization': `token ${token}` },
+            body: JSON.stringify({ message: `Update/Add ${title}`, content: content, sha: sha || undefined })
+        });
+        
+        if(res.ok) alert("✅ تم اعتماد السجل بنجاح!");
+        else alert("❌ فشل الحفظ. تأكد من صلاحية التوكن (repo).");
+    }
+
+    function closeModal() { document.getElementById('resultsModal').style.display = 'none'; }
+</script>
+</body>
+</html>
