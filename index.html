@@ -4,32 +4,49 @@
     <meta charset="UTF-8">
     <title>الفهرس الليبي الموحد</title>
     <style>
-        body { font-family: Tahoma, sans-serif; font-size: 13px; margin: 10px; background: #fafafa; }
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .box { background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        body { font-family: Tahoma, sans-serif; font-size: 12px; margin: 5px; background: #f4f7f6; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .card { background: white; padding: 8px; border: 1px solid #ddd; border-radius: 3px; }
         .full { grid-column: 1 / span 2; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-        input, select { width: 98%; padding: 5px; border: 1px solid #ccc; }
-        .search-check { background: #d4edda; border-color: #c3e6cb; margin-bottom: 10px; }
+        label { display: block; font-weight: bold; color: #2c3e50; margin-bottom: 2px; }
+        input, select { width: 100%; padding: 4px; border: 1px solid #ccc; box-sizing: border-box; }
+        .check-box { background: #e8f8f5; border: 1px solid #1abc9c; padding: 10px; margin-bottom: 8px; }
+        .example { font-size: 10px; color: #7f8c8d; font-style: italic; }
     </style>
 </head>
 <body>
-    <div class="box full search-check">
-        <label>🔍 التحقق قبل الإدخال (عنوان أو مؤلف):</label>
-        <input type="text" placeholder="اكتب للبحث في الفهرس الموحد..." onkeyup="checkData()">
+    <div class="card full check-box">
+        <label>🔍 التحقق المسبق (العنوان أو المؤلف) لمنع التكرار:</label>
+        <input type="text" placeholder="ابدأ الكتابة للبحث في قاعدة البيانات..." id="fastCheck">
     </div>
-    <div class="container">
-        <div class="box"><label>100 - المؤلف الرئيسي</label><input type="text"></div>
-        <div class="box"><label>245 - العنوان الرئيسي</label><input type="text"></div>
-        <div class="box"><label>050 - التصنيف</label><input type="text"></div>
-        <div class="box"><label>700 - مؤلف مشارك</label><input type="text"></div>
-        <div class="box full" style="border-style: dashed;">
-            <label>➕ إضافة حقل إضافي (مارك 21):</label>
-            <select id="extra">
-                <option value="">-- اختر حقل --</option>
-                <option value="502">502 - رسالة جامعية</option>
-                <option value="504">504 - ببليوغرافيا</option>
-                <option value="020">020 - ردمك ISBN</option>
+
+    <div class="grid">
+        <div class="card">
+            <label>100 - المؤلف الرئيسي</label>
+            <input type="text">
+            <span class="example">مثال: الزاوي، الطاهر أحمد.</span>
+        </div>
+        <div class="card">
+            <label>245 - العنوان الرئيسي</label>
+            <input type="text">
+            <span class="example">مثال: معجم البلدان الليبية.</span>
+        </div>
+        <div class="card">
+            <label>050 - تصنيف مكتبة الكونجرس</label>
+            <input type="text">
+            <span class="example">مثال: DT221 .Z39</span>
+        </div>
+        <div class="card">
+            <label>700 - مدخل إضافي (مؤلف مشارك)</label>
+            <input type="text">
+        </div>
+        <div class="card full" style="border: 1px dashed #3498db; background: #ebf5fb;">
+            <label>➕ إضافة حقل مارك إضافي (قائمة منسدلة):</label>
+            <select>
+                <option value="">-- اختر حقل لإضافته --</option>
+                <option value="502">502 - تبصرة الرسائل الجامعية</option>
+                <option value="504">504 - تبصرة المراجع والببليوغرافيا</option>
+                <option value="020">020 - رقم الردمك (ISBN)</option>
             </select>
         </div>
     </div>
